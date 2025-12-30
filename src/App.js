@@ -119,9 +119,9 @@ function App() {
     <div className="App">
       <div className="container">
         <div className="titlebar">
-          <h1>Excel/CSV to JSON</h1>
+          <h1>Sheetify</h1>
           <p className="subtitle">
-            Upload or drag-and-drop a file to convert and copy JSON.
+            Upload or drag-and-drop a CSV/Excel file to convert and copy JSON.
           </p>
         </div>
         <div
