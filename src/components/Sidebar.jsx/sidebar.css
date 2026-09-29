@@ -8,6 +8,10 @@
 }
 .titlebar {
   padding: 16px;
+  img{
+    width: 100%;
+    height: auto;
+  }
 }
 .titlebar h1 {
   margin: 0 0 0.25rem;
