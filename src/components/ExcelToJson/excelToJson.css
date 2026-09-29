@@ -31,7 +31,9 @@
   border-radius: 12px;
   padding: 0.9rem;
   background: #fbfcff;
-  transition: border-color 180ms ease, background 180ms ease,
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
     box-shadow 180ms ease;
 }
 
@@ -90,7 +92,9 @@
   border: 1px dashed #c7ced9;
   border-radius: 8px;
   background: #fbfcff;
-  transition: border-color 180ms ease, box-shadow 180ms ease,
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
     background 180ms ease;
 }
 
@@ -112,8 +116,11 @@
   background: #f8fafc;
   color: #0f172a;
   cursor: pointer;
-  transition: transform 180ms ease, background 180ms ease,
-    border-color 180ms ease, box-shadow 180ms ease;
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
   will-change: transform;
 }
 
@@ -158,16 +165,19 @@
 .output textarea {
   width: 100%;
   min-height: 340px;
-  resize: vertical;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    "Liberation Mono", "Courier New", monospace;
+  resize: none;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
   font-size: 0.95rem;
   line-height: 1.4;
   padding: 0.75rem;
   border-radius: 12px;
   border: 1px solid #d7dee8;
   background: #fcfdff;
-  transition: border-color 180ms ease, box-shadow 180ms ease,
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
     background 180ms ease;
   box-sizing: border-box; /* ensure width respects padding/border */
   display: block;
@@ -184,10 +194,16 @@
   position: relative;
 }
 
-.icon-btn.copy-btn {
+.output-actions {
   position: absolute;
   top: 10px;
   right: 10px;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 2;
+}
+
+.icon-btn.copy-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -199,7 +215,10 @@
   color: #0b5ed7;
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(16, 24, 40, 0.08);
-  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
 }
 
 .icon-btn.copy-btn:hover {

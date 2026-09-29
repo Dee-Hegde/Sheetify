@@ -4,6 +4,11 @@ import { Link } from "react-router-dom";
 import logo from "../../assets/images/logo.svg";
 
 const Sidebar = () => {
+  const sidebarLinks = [
+    { text: "Excel to JSON", path: "/exceltojson" },
+    { text: "JSON to Excel", path: "/jsontoexcel" },
+    { text: "JSON Formatter", path: "/jsonformatter" },
+  ];
   return (
     <div className="sidebar-container">
       <div className="titlebar">
@@ -15,8 +20,11 @@ const Sidebar = () => {
         </h1>
       </div>
       <div className="sidebar-link-container">
-        <Link to="/">Excel to JSON</Link>
-        <Link to="/jsontoexcel">JSON to Excel</Link>
+        {sidebarLinks?.map((link, index) => (
+          <Link key={index} to={link.path}>
+            {link.text}
+          </Link>
+        ))}   
       </div>
     </div>
   );

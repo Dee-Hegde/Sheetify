@@ -13,7 +13,7 @@ const ExcelToJsonConverter = () => {
 
   const hasData = useMemo(
     () => Array.isArray(jsonData) && jsonData.length > 0,
-    [jsonData]
+    [jsonData],
   );
 
   const parseCsvRows = useCallback((text) => {
@@ -67,7 +67,7 @@ const ExcelToJsonConverter = () => {
         setError(e.message || "Failed to parse file");
       }
     },
-    [parseCsvRows, parseExcelRows]
+    [parseCsvRows, parseExcelRows],
   );
 
   const handleFileChange = useCallback(
@@ -75,7 +75,7 @@ const ExcelToJsonConverter = () => {
       const file = evt.target.files && evt.target.files[0];
       await processFile(file);
     },
-    [processFile]
+    [processFile],
   );
 
   const handleDragOver = useCallback((evt) => {
@@ -96,7 +96,7 @@ const ExcelToJsonConverter = () => {
         await processFile(file);
       }
     },
-    [processFile]
+    [processFile],
   );
 
   const handleCopy = useCallback(async () => {
@@ -109,6 +109,31 @@ const ExcelToJsonConverter = () => {
       setError("Failed to copy to clipboard");
     }
   }, [jsonData]);
+
+  const handleDownload = useCallback(() => {
+    if (!hasData) {
+      return;
+    }
+
+    try {
+      const jsonText = JSON.stringify(jsonData, null, 2);
+      const safeFileName = fileName
+        ? fileName.replace(/\.[^/.]+$/, "") + ".json"
+        : "converted-data.json";
+      const blob = new Blob([jsonText], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+
+      anchor.href = url;
+      anchor.download = safeFileName;
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (e) {
+      setError("Failed to download JSON file");
+    }
+  }, [fileName, hasData, jsonData]);
 
   const handleClear = useCallback(() => {
     setJsonData([]);
@@ -175,26 +200,48 @@ const ExcelToJsonConverter = () => {
           </p>
         ) : null}
         <div className="output">
-          <button
-            aria-label="copy"
-            title="Copy JSON"
-            className={"icon-btn copy-btn" + (hasData ? "" : " disabled")}
-            onClick={handleCopy}
-            disabled={!hasData}
-          >
-            <svg
-              aria-hidden="true"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
+          <div className="output-actions">
+            <button
+              aria-label="copy"
+              title="Copy JSON"
+              className={"icon-btn copy-btn" + (hasData ? "" : " disabled")}
+              onClick={handleCopy}
+              disabled={!hasData}
             >
-              <path
-                d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1Zm4 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16H8V7h12v14Z"
-                fill="currentColor"
-              />
-            </svg>
-          </button>
+              <svg
+                aria-hidden="true"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1Zm4 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16H8V7h12v14Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+            <button
+              aria-label="download"
+              title="Download JSON"
+              className={"icon-btn copy-btn" + (hasData ? "" : " disabled")}
+              onClick={handleDownload}
+              disabled={!hasData}
+            >
+              <svg
+                aria-hidden="true"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M12 3a1 1 0 0 1 1 1v9.59l3.3-3.3a1 1 0 1 1 1.4 1.42l-5 5a1 1 0 0 1-1.4 0l-5-5a1 1 0 1 1 1.4-1.42L11 13.59V4a1 1 0 0 1 1-1Zm-7 14a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-1a1 1 0 0 1 1-1Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+          </div>
           <textarea
             aria-label="json-output"
             readOnly

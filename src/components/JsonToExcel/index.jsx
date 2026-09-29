@@ -88,7 +88,7 @@ const JSONToExcel = () => {
     } catch (e) {
       setError("Failed to generate Excel file.");
     }
-  }, [text, fileName]);
+  }, [convertJson, fileName]);
 
   return (
     <div className="App">
