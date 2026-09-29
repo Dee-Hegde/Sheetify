@@ -9,36 +9,114 @@ import { formatJson } from "../../utils/jsonFormatter";
 import "./jsonFormatter.css";
 
 const DEFAULT_FILE_NAME = "formatted-data.json";
-const DEFAULT_EMPTY_STATUS = {
-  type: "empty",
-  message: "Enter or upload JSON data",
-  details: "",
-};
-
 const EXAMPLE_JSON = `{
   "name": "John Doe",
   "age": 30,
-  "skills": ["JavaScript", "React"],
+  "skills": [
+    "JavaScript",
+    "React"
+  ],
+  "active": true,
+  "manager": null,
   "address": {
     "city": "Mysore",
     "country": "India"
   }
 }`;
 
+const EMPTY_STATUS = {
+  type: "empty",
+  message: "Paste JSON to get started",
+  details: "",
+};
+
+const formatErrorStatus = (result) => ({
+  type: "invalid",
+  message: "Invalid JSON",
+  details: result.error || "The JSON could not be parsed.",
+});
+
+const renderHighlightedJson = (value) => {
+  const tokenPattern =
+    /"(?:\\.|[^"\\])*"|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|\b(?:true|false|null)\b/g;
+  const parts = [];
+  let lastIndex = 0;
+
+  for (const match of value.matchAll(tokenPattern)) {
+    const token = match[0];
+    const tokenIndex = match.index;
+    const isKey =
+      token.startsWith('"') &&
+      /^\s*:/.test(value.slice(tokenIndex + token.length));
+    const tokenType = isKey
+      ? "key"
+      : token.startsWith('"')
+        ? "string"
+        : /^-?\d/.test(token)
+          ? "number"
+          : "literal";
+
+    if (tokenIndex > lastIndex) {
+      parts.push(value.slice(lastIndex, tokenIndex));
+    }
+    parts.push(
+      <span
+        className={`json-token json-token-${tokenType}`}
+        key={tokenIndex}
+      >
+        {token}
+      </span>,
+    );
+    lastIndex = tokenIndex + token.length;
+  }
+
+  if (lastIndex < value.length) {
+    parts.push(value.slice(lastIndex));
+  }
+
+  return parts;
+};
+
+const EditorAction = ({ label, onClick, disabled, children }) => (
+  <button
+    type="button"
+    className="icon-btn"
+    aria-label={label}
+    title={label}
+    onClick={onClick}
+    disabled={disabled}
+  >
+    {children}
+  </button>
+);
+
 const JSONFormatter = () => {
   const fileInputRef = useRef(null);
   const editorRef = useRef(null);
   const gutterRef = useRef(null);
-  const [jsonText, setJsonText] = useState("");
-  const [status, setStatus] = useState(DEFAULT_EMPTY_STATUS);
+  const outputRef = useRef(null);
+  const outputGutterRef = useRef(null);
+  const [jsonText, setJsonText] = useState(EXAMPLE_JSON);
+  const [formattedText, setFormattedText] = useState(EXAMPLE_JSON);
+  const [status, setStatus] = useState({
+    type: "valid",
+    message: "Valid JSON, formatted",
+    details: "",
+  });
   const [feedback, setFeedback] = useState("");
   const [fileName, setFileName] = useState(DEFAULT_FILE_NAME);
   const [isDragging, setIsDragging] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const lineNumbers = useMemo(() => {
     const totalLines = Math.max(jsonText.split(/\r\n|\r|\n/).length, 1);
     return Array.from({ length: totalLines }, (_, index) => index + 1);
   }, [jsonText]);
+
+  const outputLineNumbers = useMemo(() => {
+    const totalLines = Math.max(formattedText.split(/\r\n|\r|\n/).length, 1);
+    return Array.from({ length: totalLines }, (_, index) => index + 1);
+  }, [formattedText]);
 
   const updateStatus = useCallback((type, message, details = "") => {
     setStatus({ type, message, details });
@@ -78,77 +156,57 @@ const JSONFormatter = () => {
       }
 
       setFileName(file.name || DEFAULT_FILE_NAME);
+      setIsLoading(true);
 
       try {
         const fileText = await file.text();
         setJsonText(fileText);
 
         if (!fileText.trim()) {
-          updateStatus("empty", "Enter or upload JSON data", "");
-          setFeedback("✕ Uploaded file is empty");
+          setFormattedText("");
+          updateStatus(EMPTY_STATUS.type, EMPTY_STATUS.message, "");
+          setFeedback("Uploaded file is empty");
           return;
         }
 
         const result = formatJson(fileText);
 
         if (result.success) {
-          updateStatus("valid", "✓ Valid JSON", "");
+          setFormattedText(result.formatted);
+          updateStatus("valid", "Valid JSON, formatted", "");
           setFeedback(`✓ ${file.name || "JSON file"} loaded`);
           return;
         }
 
-        updateStatus(
-          "invalid",
-          "✕ Invalid JSON",
-          result.error || "The JSON could not be parsed.",
-        );
-        setFeedback("✕ Invalid JSON file loaded");
+        setFormattedText("");
+        setStatus(formatErrorStatus(result));
+        setFeedback("Invalid JSON file loaded");
       } catch (error) {
+        setFormattedText("");
         updateStatus(
           "invalid",
-          "✕ File read failed",
+          "File read failed",
           "The selected file could not be read.",
         );
-        setFeedback("✕ Unable to read file");
+        setFeedback("Unable to read file");
+      } finally {
+        setIsLoading(false);
       }
     },
     [getJsonFileError, updateStatus],
-  );
-
-  const validateText = useCallback(
-    (nextText) => {
-      const trimmed = nextText.trim();
-
-      if (!trimmed) {
-        updateStatus("empty", "Enter or upload JSON data", "");
-        return false;
-      }
-
-      const result = formatJson(nextText);
-
-      if (result.success) {
-        updateStatus("valid", "✓ Valid JSON", "");
-        return true;
-      }
-
-      updateStatus(
-        "invalid",
-        "✕ Invalid JSON",
-        result.error || "The JSON could not be parsed.",
-      );
-      return false;
-    },
-    [updateStatus],
   );
 
   const handleEditorChange = useCallback(
     (event) => {
       const nextText = event.target.value;
       setJsonText(nextText);
+      setFormattedText("");
       setFeedback("");
 
       if (!nextText.trim()) {
-        updateStatus("empty", "Enter or upload JSON data", "");
+        updateStatus(EMPTY_STATUS.type, EMPTY_STATUS.message, "");
+      } else {
+        updateStatus("ready", "Ready to format", "");
       }
     },
     [updateStatus],
@@ -156,49 +214,66 @@ const JSONFormatter = () => {
 
   const handleFormat = useCallback(() => {
     if (!jsonText.trim()) {
-      updateStatus("empty", "Enter or upload JSON data", "");
+      setFormattedText("");
+      updateStatus(EMPTY_STATUS.type, EMPTY_STATUS.message, "");
       return;
     }
 
     const result = formatJson(jsonText);
 
     if (result.success) {
-      setJsonText(result.formatted);
-      updateStatus("valid", "✓ Valid JSON", "");
-      setFeedback("✓ JSON formatted");
+      const formatted = JSON.stringify(result.parsed, null, 2);
+      setJsonText(formatted);
+      setFormattedText(formatted);
+      updateStatus("valid", "Valid JSON, formatted", "");
+      setFeedback("JSON formatted");
       return;
     }
 
-    updateStatus(
-      "invalid",
-      "✕ Invalid JSON",
-      result.error || "The JSON could not be parsed.",
-    );
+    setFormattedText("");
+    setStatus(formatErrorStatus(result));
     setFeedback("");
+  }, [jsonText, updateStatus]);
+
+  const handleMinify = useCallback(() => {
+    const result = formatJson(jsonText);
+
+    if (!result.success) {
+      setFormattedText("");
+      setStatus(formatErrorStatus(result));
+      setFeedback("");
+      return;
+    }
+
+    setFormattedText(JSON.stringify(result.parsed));
+    updateStatus("valid", "Valid JSON, minified", "");
+    setFeedback("JSON minified");
   }, [jsonText, updateStatus]);
 
   const handleClear = useCallback(() => {
     setJsonText("");
+    setFormattedText("");
     setFileName(DEFAULT_FILE_NAME);
     setFeedback("");
-    updateStatus("empty", "Enter or upload JSON data", "");
+    updateStatus(EMPTY_STATUS.type, EMPTY_STATUS.message, "");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   }, [updateStatus]);
 
   const handleCopy = useCallback(async () => {
-    if (!jsonText.trim()) {
-      updateStatus("empty", "Enter or upload JSON data", "");
+    const textToCopy = formattedText || jsonText;
+    if (!textToCopy.trim()) {
+      updateStatus(EMPTY_STATUS.type, EMPTY_STATUS.message, "");
       return;
     }
 
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(jsonText);
+        await navigator.clipboard.writeText(textToCopy);
       } else {
         const textArea = document.createElement("textarea");
-        textArea.value = jsonText;
+        textArea.value = textToCopy;
         textArea.setAttribute("readonly", "");
         textArea.style.position = "fixed";
         textArea.style.left = "-9999px";
@@ -208,15 +283,20 @@ const JSONFormatter = () => {
         document.body.removeChild(textArea);
       }
 
-      setFeedback("✓ JSON copied to clipboard");
+      setFeedback("JSON copied to clipboard");
     } catch (error) {
-      setFeedback("✕ Unable to copy JSON to clipboard");
+      setFeedback("Unable to copy JSON to clipboard");
     }
-  }, [jsonText, updateStatus]);
+  }, [formattedText, jsonText, updateStatus]);
 
   const handleDownload = useCallback(() => {
-    if (!jsonText.trim()) {
-      updateStatus("empty", "Enter or upload JSON data", "");
+    const result = formatJson(jsonText);
+    if (!result.success) {
+      if (!result.empty) {
+        setStatus(formatErrorStatus(result));
+      } else {
+        updateStatus(EMPTY_STATUS.type, EMPTY_STATUS.message, "");
+      }
       return;
     }
 
@@ -225,7 +305,9 @@ const JSONFormatter = () => {
       const safeName = /\.json$/i.test(normalizedName)
         ? normalizedName
         : `${normalizedName || DEFAULT_FILE_NAME}.json`;
-      const blob = new Blob([jsonText], { type: "application/json" });
+      const exportText =
+        formattedText || JSON.stringify(result.parsed, null, 2);
+      const blob = new Blob([exportText], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
@@ -234,11 +316,11 @@ const JSONFormatter = () => {
       anchor.click();
       document.body.removeChild(anchor);
       setTimeout(() => URL.revokeObjectURL(url), 1000);
-      setFeedback(`✓ ${safeName} downloaded`);
+      setFeedback(`${safeName} downloaded`);
     } catch (error) {
-      setFeedback("✕ Download failed");
+      setFeedback("Download failed");
     }
-  }, [fileName, jsonText, updateStatus]);
+  }, [fileName, formattedText, jsonText, updateStatus]);
 
   const handleFileUpload = useCallback(
     async (event) => {
@@ -305,21 +387,17 @@ const JSONFormatter = () => {
     return () => window.removeEventListener("keydown", handleKeyboardShortcuts);
   }, [handleCopy, handleFormat]);
 
-  useEffect(() => {
-    const editor = editorRef.current;
-    const gutter = gutterRef.current;
-
-    if (!editor || !gutter) {
-      return undefined;
+  const syncInputScroll = useCallback(() => {
+    if (gutterRef.current && editorRef.current) {
+      gutterRef.current.scrollTop = editorRef.current.scrollTop;
     }
+  }, []);
 
-    const syncScroll = () => {
-      gutter.scrollTop = editor.scrollTop;
-    };
-
-    editor.addEventListener("scroll", syncScroll);
-    return () => editor.removeEventListener("scroll", syncScroll);
-  }, [jsonText]);
+  const syncOutputScroll = useCallback(() => {
+    if (outputGutterRef.current && outputRef.current) {
+      outputGutterRef.current.scrollTop = outputRef.current.scrollTop;
+    }
+  }, []);
 
   const errorLine =
     status.type === "invalid" && status.details
@@ -328,6 +406,11 @@ const JSONFormatter = () => {
 
   return (
     <div className="formatter-page">
+      <header className="formatter-heading">
+        <h1>JSON Formatter</h1>
+        <p>Paste or upload JSON to validate, format and copy it.</p>
+      </header>
+
       <div className="container formatter-container">
         <div className="formatter-toolbar">
           <input
@@ -345,25 +428,40 @@ const JSONFormatter = () => {
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
           >
+            <span
+              className="upload-icon"
+              aria-hidden="true"
+            >
+              ↑
+            </span>
             <button
               type="button"
               className="btn"
               onClick={() => fileInputRef.current?.click()}
               aria-label="Upload JSON file"
             >
-              Upload JSON
+              Browse JSON
             </button>
             <span className="upload-hint">
               {isDragging
-                ? "Drop JSON file here"
-                : "Drag & drop JSON file here"}
+                ? "Drop a .json file here"
+                : "Drop a .json file here, or"}
             </span>
           </div>
 
           <button
             type="button"
+            className="btn btn-secondary"
+            onClick={handleMinify}
+            disabled={isLoading || !jsonText.trim()}
+          >
+            Minify
+          </button>
+          <button
+            type="button"
             className="btn primary"
             onClick={handleFormat}
+            disabled={isLoading || !jsonText.trim()}
           >
             Format
           </button>
@@ -371,13 +469,14 @@ const JSONFormatter = () => {
             type="button"
             className="btn btn-secondary"
             onClick={handleClear}
+            disabled={isLoading}
           >
             Clear
           </button>
         </div>
 
         <div
-          className={`editor-dropzone ${isDragging ? "dragging" : ""}`}
+          className={`editor-dropzone ${isDragging ? "dragging" : ""} ${status.type === "invalid" ? "has-error" : ""}`}
           onDragEnter={handleDragOver}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -393,27 +492,59 @@ const JSONFormatter = () => {
           )}
 
           <div className="editor-shell">
-            {!jsonText.trim() && !isDragging && (
-              <div className="editor-header">
-                <div
-                  className="empty-state"
-                  aria-live="polite"
-                >
-                  <strong>No JSON data</strong>
-                  <span>Paste JSON here.</span>
+            <section
+              className="json-pane input-pane"
+              aria-label="JSON input"
+            >
+              <div className="pane-heading">
+                <div className="pane-title">
+                  <strong>Input</strong>
+                  <span>Paste JSON here</span>
                 </div>
-
+              </div>
+              <div className="pane-editor">
                 <div
-                  className="editor-actions"
-                  aria-label="JSON editor actions"
+                  className="line-gutter"
+                  ref={gutterRef}
+                  aria-hidden="true"
                 >
-                  <button
-                    type="button"
-                    aria-label="Copy JSON"
-                    title="Copy JSON"
-                    className={`icon-btn ${jsonText.trim() ? "" : "disabled"}`}
+                  {lineNumbers.map((lineNumber) => (
+                    <span
+                      key={lineNumber}
+                      className={`line-number ${errorLine === lineNumber ? "error" : ""}`}
+                    >
+                      {lineNumber}
+                    </span>
+                  ))}
+                </div>
+                <textarea
+                  ref={editorRef}
+                  className="json-editor"
+                  value={jsonText}
+                  onChange={handleEditorChange}
+                  onScroll={syncInputScroll}
+                  placeholder="Paste JSON here"
+                  spellCheck={false}
+                  aria-label="JSON input editor"
+                  aria-invalid={status.type === "invalid"}
+                />
+              </div>
+            </section>
+
+            <section
+              className="json-pane output-pane"
+              aria-label="Formatted JSON"
+            >
+              <div className="pane-heading">
+                <div className="pane-title">
+                  <strong>Formatted</strong>
+                  <span>Read-only</span>
+                </div>
+                <div className="pane-actions">
+                  <EditorAction
+                    label="Copy JSON"
                     onClick={handleCopy}
-                    disabled={!jsonText.trim()}
+                    disabled={!formattedText && !jsonText.trim()}
                   >
                     <svg
                       aria-hidden="true"
@@ -427,12 +558,9 @@ const JSONFormatter = () => {
                         fill="currentColor"
                       />
                     </svg>
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Download JSON"
-                    title="Download JSON"
-                    className={`icon-btn ${jsonText.trim() ? "" : "disabled"}`}
+                  </EditorAction>
+                  <EditorAction
+                    label="Download JSON"
                     onClick={handleDownload}
                     disabled={!jsonText.trim()}
                   >
@@ -448,90 +576,42 @@ const JSONFormatter = () => {
                         fill="currentColor"
                       />
                     </svg>
-                  </button>
+                  </EditorAction>
                 </div>
               </div>
-            )}
-
-            {jsonText.trim() && (
-              <div
-                className="editor-actions editor-actions-floating"
-                aria-label="JSON editor actions"
-              >
-                <button
-                  type="button"
-                  aria-label="Copy JSON"
-                  title="Copy JSON"
-                  className="icon-btn"
-                  onClick={handleCopy}
+              <div className="pane-editor output-editor">
+                <div
+                  className="line-gutter output-gutter"
+                  ref={outputGutterRef}
+                  aria-hidden="true"
                 >
-                  <svg
-                    aria-hidden="true"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
-                    <path
-                      d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1Zm4 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16H8V7h12v14Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  aria-label="Download JSON"
-                  title="Download JSON"
-                  className="icon-btn"
-                  onClick={handleDownload}
+                  {outputLineNumbers.map((lineNumber) => (
+                    <span
+                      key={lineNumber}
+                      className="line-number"
+                    >
+                      {lineNumber}
+                    </span>
+                  ))}
+                </div>
+                <pre
+                  ref={outputRef}
+                  className="json-output"
+                  onScroll={syncOutputScroll}
+                  aria-label="Formatted JSON output"
                 >
-                  <svg
-                    aria-hidden="true"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
-                    <path
-                      d="M12 3a1 1 0 0 1 1 1v9.59l3.3-3.3a1 1 0 1 1 1.4 1.42l-5 5a1 1 0 0 1-1.4 0l-5-5a1 1 0 1 1 1.4-1.42L11 13.59V4a1 1 0 0 1 1-1Zm-7 14a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-1a1 1 0 0 1 1-1Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </button>
+                  {isLoading ? (
+                    "Loading JSON…"
+                  ) : formattedText ? (
+                    renderHighlightedJson(formattedText)
+                  ) : (
+                    <span className="output-placeholder">
+                      Formatted JSON appears here
+                    </span>
+                  )}
+                </pre>
               </div>
-            )}
-
-            <div className="editor-with-gutter">
-              <div
-                className="line-gutter"
-                ref={gutterRef}
-                aria-hidden="true"
-              >
-                {lineNumbers.map((lineNumber) => (
-                  <span
-                    key={lineNumber}
-                    className={`line-number ${errorLine === lineNumber ? "error" : ""}`}
-                  >
-                    {lineNumber}
-                  </span>
-                ))}
-              </div>
-
-              <textarea
-                ref={editorRef}
-                className="json-editor"
-                value={jsonText}
-                onChange={handleEditorChange}
-                onScroll={() => {
-                  if (gutterRef.current && editorRef.current) {
-                    gutterRef.current.scrollTop = editorRef.current.scrollTop;
-                  }
-                }}
-                placeholder={EXAMPLE_JSON}
-                spellCheck={false}
-                aria-label="JSON editor"
-              />
-            </div>
+            </section>
           </div>
         </div>
 
@@ -540,7 +620,12 @@ const JSONFormatter = () => {
           role="status"
           aria-live="polite"
         >
-          {status.message}
+          <span
+            className="status-dot"
+            aria-hidden="true"
+          />
+          <span className="status-message">{status.message}</span>
+          {feedback ? <span className="toast">{feedback}</span> : null}
         </div>
 
         {status.type === "invalid" && status.details ? (
@@ -552,7 +637,6 @@ const JSONFormatter = () => {
           </div>
         ) : null}
 
-        {feedback ? <div className="toast">{feedback}</div> : null}
       </div>
     </div>
   );

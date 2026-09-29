@@ -15,7 +15,6 @@
 .page-container {
   width: 100%;
   padding: 24px;
-  padding-top: 64px;
   height: 100vh;
   overflow: hidden;
 }
