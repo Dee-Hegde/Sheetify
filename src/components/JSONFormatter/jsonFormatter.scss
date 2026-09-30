@@ -1,0 +1,513 @@
+@use "../../assets/styles/variables" as *;
+
+.formatter-page {
+  @include flex-layout(column, stretch);
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  color: var(--page-text);
+
+  .formatter-heading {
+    flex: 0 0 auto;
+    margin: 0 0 22px;
+    padding-left: 2px;
+
+    h1 {
+      margin: 0;
+      color: var(--page-text);
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+  }
+
+  .formatter-container {
+    @include flex-layout(column, stretch, flex-start, 12px);
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    padding: 16px;
+    overflow: hidden;
+    border: 1px solid var(--page-border);
+    border-radius: 20px;
+    background: var(--page-surface);
+    box-shadow: 0 12px 34px rgba(28, 54, 42, 0.06);
+
+    .theme-dark & {
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.16);
+    }
+  }
+
+  .formatter-toolbar {
+    @include flex-layout(row, center, flex-start, 10px);
+    flex: 0 0 auto;
+    min-height: 66px;
+
+    .btn {
+      @include flex-layout(row, center, center, 10px);
+      height: 48px;
+      min-width: 80px;
+      padding: 0 18px;
+      border: 1px solid var(--page-border);
+      border-radius: 12px;
+      background: var(--page-surface);
+      color: var(--page-text);
+      font: inherit;
+      font-size: 0.98rem;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+      transition:
+        background 150ms ease,
+        border-color 150ms ease,
+        transform 150ms ease;
+
+      &:hover:not(:disabled) {
+        background: var(--page-soft);
+      }
+
+      &:active:not(:disabled) {
+        transform: translateY(1px);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      &.primary {
+        min-width: 112px;
+        border-color: var(--page-accent);
+        background: var(--page-accent);
+        color: #fff;
+        font-weight: 650;
+
+        &:hover:not(:disabled) {
+          background: color-mix(in srgb, var(--page-accent) 80%, #fff);
+        }
+      }
+    }
+  }
+
+  .upload-dropzone {
+    @include flex-layout(row, center, flex-start, 12px);
+    flex: 1 1 auto;
+    min-width: 180px;
+    height: 64px;
+    padding: 10px 14px;
+    border: 1px dashed var(--page-border);
+    border-radius: 13px;
+    background: var(--page-surface);
+    transition:
+      border-color 160ms ease,
+      background 160ms ease;
+
+    &.dragging {
+      border-color: var(--page-accent);
+      background: rgba(18, 183, 106, 0.08);
+    }
+  }
+
+  .upload-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .upload-hint {
+    color: var(--page-muted);
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+
+  .editor-dropzone {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid var(--page-border);
+    border-radius: 14px;
+    background: var(--page-surface);
+    transition:
+      border-color 160ms ease,
+      box-shadow 160ms ease;
+
+    &.dragging {
+      border-color: var(--page-accent);
+      box-shadow: inset 0 0 0 1px var(--page-accent);
+    }
+
+    &.has-error {
+      border-color: #f4b6b6;
+    }
+
+    .drop-overlay {
+      position: absolute;
+      z-index: 3;
+      inset: 0;
+      @include flex-layout(row, center, center);
+      background: rgba(18, 183, 106, 0.08);
+      pointer-events: none;
+
+      span {
+        padding: 12px 18px;
+        border: 1px dashed var(--page-accent);
+        border-radius: 10px;
+        background: var(--page-surface);
+        color: var(--page-success-text);
+        font-weight: 600;
+      }
+    }
+  }
+
+  .editor-shell {
+    display: grid;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .json-pane {
+    @include flex-layout(column, stretch);
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .output-pane {
+    border-left: 1px solid var(--page-border);
+  }
+
+  .pane-heading {
+    @include flex-layout(row, center, space-between, 12px);
+    flex: 0 0 58px;
+    min-width: 0;
+    padding: 0 12px 0 16px;
+    border-bottom: 1px solid var(--page-border);
+    background: var(--page-soft);
+  }
+
+  .pane-title {
+    @include flex-layout(row, baseline, flex-start, 10px);
+    min-width: 0;
+    font-size: 0.98rem;
+
+    strong {
+      color: var(--page-text);
+      font-weight: 650;
+    }
+
+    span {
+      overflow: hidden;
+      color: var(--page-muted);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .pane-actions {
+    @include flex-layout(row, center, flex-start, 8px);
+    flex: 0 0 auto;
+  }
+
+  .icon-btn {
+    @include flex-layout(row, center, center);
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid var(--page-border);
+    border-radius: 11px;
+    background: var(--page-surface);
+    color: var(--page-muted);
+    cursor: pointer;
+    transition:
+      background 150ms ease,
+      border-color 150ms ease;
+
+    &:hover:not(:disabled) {
+      background: var(--page-soft);
+    }
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+  }
+
+  .pane-editor {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--page-surface);
+  }
+
+  .line-gutter {
+    flex: 0 0 48px;
+    width: 48px;
+    padding: 18px 10px 18px 4px;
+    overflow: hidden;
+    border-right: 1px solid var(--page-border);
+    background: var(--page-gutter);
+    color: var(--page-muted);
+    font-family: var(--formatter-mono);
+    font-size: 0.9rem;
+    line-height: 1.58;
+    text-align: right;
+    user-select: none;
+    pointer-events: none;
+
+    .line-number {
+      display: block;
+      height: 1.58em;
+
+      &.error {
+        border-radius: 3px;
+        background: var(--page-error-bg);
+        color: var(--page-error-text);
+        font-weight: 700;
+      }
+    }
+  }
+
+  .json-editor,
+  .json-output {
+    flex: 1 1 auto;
+    width: 0;
+    min-width: 0;
+    height: 100%;
+    min-height: 0;
+    margin: 0;
+    padding: 18px 16px;
+    overflow: auto;
+    border: 0;
+    background: var(--page-surface);
+    color: var(--page-text);
+    font-family: var(--formatter-mono);
+    font-size: 0.94rem;
+    font-weight: 400;
+    line-height: 1.58;
+    tab-size: 2;
+    white-space: pre;
+  }
+
+  .json-editor {
+    resize: none;
+    outline: none;
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px
+        color-mix(in srgb, var(--page-accent) 20%, transparent);
+    }
+
+    &::placeholder {
+      color: var(--page-muted);
+    }
+  }
+
+  .json-output {
+    display: block;
+    overscroll-behavior: contain;
+  }
+
+  .output-placeholder {
+    color: var(--page-muted);
+  }
+
+  .json-token-key {
+    color: var(--page-code-key);
+  }
+  .json-token-string {
+    color: var(--page-code-string);
+  }
+  .json-token-number {
+    color: var(--page-code-number);
+  }
+  .json-token-literal {
+    color: var(--page-code-literal);
+  }
+
+  .theme-dark & {
+    .icon-btn:hover:not(:disabled) {
+      border-color: var(--page-accent);
+    }
+  }
+
+  .status-banner {
+    @include flex-layout(row, center, flex-start, 10px);
+    flex: 0 0 auto;
+    min-height: 46px;
+    padding: 0 14px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    font-size: 0.98rem;
+    font-weight: 600;
+  }
+
+  .status-message {
+    min-width: 0;
+  }
+
+  .status-dot {
+    flex: 0 0 11px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .status-valid {
+    border-color: var(--page-success-border);
+    background: var(--page-success-bg);
+    color: var(--page-success-text);
+  }
+
+  .status-ready,
+  .status-empty {
+    border-color: var(--page-info-border);
+    background: var(--page-info-bg);
+    color: var(--page-info-text);
+  }
+
+  .status-invalid {
+    border-color: var(--page-error-border);
+    background: var(--page-error-bg);
+    color: var(--page-error-text);
+  }
+
+  .validation-error {
+    flex: 0 0 auto;
+    margin-top: -8px;
+    color: var(--page-error-text);
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+  }
+
+  .toast {
+    flex: 0 1 auto;
+    margin-left: auto;
+    overflow: hidden;
+    color: inherit;
+    font-size: 0.78rem;
+    font-weight: 500;
+    opacity: 0.78;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 900px) {
+  .formatter-page {
+    .formatter-container {
+      padding: 12px;
+    }
+    .formatter-toolbar {
+      flex-wrap: wrap;
+    }
+    .upload-dropzone {
+      flex-basis: 100%;
+    }
+
+    .formatter-toolbar .btn {
+      height: 44px;
+      padding-right: 12px;
+      padding-left: 12px;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .formatter-page {
+    height: auto;
+    min-height: 100%;
+
+    .formatter-heading {
+      margin-bottom: 16px;
+
+      h1 {
+        font-size: 1.7rem;
+      }
+    }
+
+    .formatter-container {
+      flex: 0 0 auto;
+      gap: 12px;
+      overflow: visible;
+      border-radius: 15px;
+    }
+
+    .formatter-toolbar {
+      gap: 8px;
+    }
+    .upload-dropzone {
+      height: 56px;
+      padding: 8px 10px;
+      gap: 8px;
+    }
+    .upload-hint {
+      font-size: 0.82rem;
+    }
+
+    .formatter-toolbar .btn {
+      flex: 1 1 calc(33.333% - 8px);
+      width: 100%;
+      min-width: 0;
+      padding: 0 8px;
+      font-size: 0.9rem;
+    }
+
+    .formatter-toolbar .btn.primary {
+      min-width: 0;
+    }
+    .editor-dropzone {
+      min-height: 700px;
+    }
+
+    .editor-shell {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(320px, 1fr) minmax(320px, 1fr);
+    }
+
+    .output-pane {
+      border-top: 1px solid var(--page-border);
+      border-left: 0;
+    }
+
+    .pane-heading {
+      flex-basis: 54px;
+      padding-right: 8px;
+      padding-left: 12px;
+    }
+    .pane-title {
+      gap: 7px;
+      font-size: 0.9rem;
+    }
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+    }
+
+    .line-gutter {
+      flex-basis: 40px;
+      width: 40px;
+      padding-right: 8px;
+      font-size: 0.82rem;
+    }
+
+    .json-editor,
+    .json-output {
+      padding: 16px 11px;
+      font-size: 0.82rem;
+    }
+    .status-banner {
+      min-height: 44px;
+      padding: 0 12px;
+      font-size: 0.9rem;
+    }
+    .toast {
+      font-size: 0.72rem;
+    }
+  }
+}

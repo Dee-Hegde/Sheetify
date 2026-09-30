@@ -6,7 +6,8 @@ import React, {
   useState,
 } from "react";
 import { formatJson } from "../../utils/jsonFormatter";
-import "./jsonFormatter.css";
+import uploadFile from "../../assets/images/upload-file.svg";
+import "./jsonFormatter.scss";
 
 const DEFAULT_FILE_NAME = "formatted-data.json";
 const EXAMPLE_JSON = `{
@@ -408,7 +409,6 @@ const JSONFormatter = () => {
     <div className="formatter-page">
       <header className="formatter-heading">
         <h1>JSON Formatter</h1>
-        <p>Paste or upload JSON to validate, format and copy it.</p>
       </header>
 
       <div className="container formatter-container">
@@ -428,35 +428,26 @@ const JSONFormatter = () => {
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
           >
-            <span
-              className="upload-icon"
-              aria-hidden="true"
-            >
-              ↑
-            </span>
             <button
               type="button"
               className="btn"
               onClick={() => fileInputRef.current?.click()}
               aria-label="Upload JSON file"
             >
+              <span
+                className="upload-icon"
+                aria-hidden="true"
+              >
+                <img
+                  src={uploadFile}
+                  alt="Upload File"
+                />
+              </span>
               Browse JSON
             </button>
-            <span className="upload-hint">
-              {isDragging
-                ? "Drop a .json file here"
-                : "Drop a .json file here, or"}
-            </span>
+            <span className="upload-hint">Drop a .json file here"</span>
           </div>
 
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={handleMinify}
-            disabled={isLoading || !jsonText.trim()}
-          >
-            Minify
-          </button>
           <button
             type="button"
             className="btn primary"
@@ -472,6 +463,14 @@ const JSONFormatter = () => {
             disabled={isLoading}
           >
             Clear
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={handleMinify}
+            disabled={isLoading || !jsonText.trim()}
+          >
+            Minify
           </button>
         </div>
 
@@ -636,7 +635,6 @@ const JSONFormatter = () => {
             {status.details}
           </div>
         ) : null}
-
       </div>
     </div>
   );

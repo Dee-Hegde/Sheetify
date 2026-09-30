@@ -1,9 +1,9 @@
 import React from "react";
-import "./sidebar.css";
-import { Link } from "react-router-dom";
+import "./sidebar.scss";
+import { NavLink } from "react-router-dom";
 import logo from "../../assets/images/logo.svg";
 
-const Sidebar = () => {
+const Sidebar = ({ theme, setTheme }) => {
   const sidebarLinks = [
     { text: "Excel to JSON", path: "/exceltojson" },
     { text: "JSON to Excel", path: "/jsontoexcel" },
@@ -19,12 +19,39 @@ const Sidebar = () => {
           />
         </h1>
       </div>
-      <div className="sidebar-link-container">
+      <nav
+        className="sidebar-link-container"
+        aria-label="Main navigation"
+      >
         {sidebarLinks?.map((link, index) => (
-          <Link key={index} to={link.path}>
+          <NavLink
+            key={index}
+            to={link.path}
+          >
             {link.text}
-          </Link>
-        ))}   
+          </NavLink>
+        ))}
+      </nav>
+      <div
+        className="sidebar-theme-switcher"
+        aria-label="Page color theme"
+      >
+        <button
+          type="button"
+          className={theme === "light" ? "active" : ""}
+          aria-pressed={theme === "light"}
+          onClick={() => setTheme("light")}
+        >
+          <span aria-hidden="true">☼</span> Light
+        </button>
+        <button
+          type="button"
+          className={theme === "dark" ? "active" : ""}
+          aria-pressed={theme === "dark"}
+          onClick={() => setTheme("dark")}
+        >
+          <span aria-hidden="true">☾</span> Dark
+        </button>
       </div>
     </div>
   );

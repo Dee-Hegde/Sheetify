@@ -1,0 +1,478 @@
+@use "../../assets/styles/variables" as *;
+
+.excel-to-json {
+  @include flex-layout(column, stretch);
+  width: 100%;
+  height: calc(100vh - 48px);
+  min-height: 620px;
+  color: var(--page-text);
+
+  .excel-to-json-heading {
+    flex: 0 0 auto;
+    margin-bottom: 20px;
+
+    h1 {
+      margin: 0;
+      color: var(--page-text);
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    p {
+      margin-top: 6px;
+      color: var(--page-muted);
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+  }
+
+  .excel-to-json-card {
+    @include flex-layout(column, stretch);
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    border: 1px solid var(--page-border);
+    border-radius: 20px;
+    background: var(--page-surface);
+  }
+
+  .excel-to-json-toolbar {
+    display: grid;
+    flex: 0 0 auto;
+    grid-template-columns: minmax(220px, 1fr) auto auto auto;
+    gap: 10px;
+    padding: 16px;
+
+    .excel-file-drop,
+    .select-control,
+    .toolbar-button {
+      @include flex-layout(row, center, center, 8px);
+      min-width: 0;
+      min-height: 48px;
+      padding: 0 14px;
+      border: 1px solid var(--page-border);
+      border-radius: 12px;
+      background: var(--page-surface);
+      color: var(--page-text);
+      font: inherit;
+      font-size: 0.94rem;
+      white-space: nowrap;
+    }
+
+    .excel-file-drop {
+      justify-content: flex-start;
+      overflow: hidden;
+      border-style: dashed;
+      color: var(--page-muted);
+
+      &.dragging {
+        border-color: var(--page-accent);
+        background: var(--page-soft);
+      }
+
+      > span:not(.selected-file) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      svg {
+        flex: 0 0 18px;
+        width: 18px;
+        height: 18px;
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 1.8;
+      }
+
+      .browse-button {
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--page-text);
+        font: inherit;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+
+      .selected-file {
+        margin-left: auto;
+        overflow: hidden;
+        color: var(--page-muted);
+        text-overflow: ellipsis;
+      }
+    }
+
+    .select-control {
+      padding: 0 12px;
+
+      select {
+        max-width: 140px;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        cursor: pointer;
+
+        option {
+          background: var(--page-surface);
+          color: var(--page-text);
+        }
+      }
+    }
+
+    .indent-control select {
+      min-width: 90px;
+    }
+
+    .toolbar-button {
+      cursor: pointer;
+      transition: background 150ms ease;
+
+      &:hover:not(:disabled) {
+        background: var(--page-soft);
+      }
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .excel-to-json-panes {
+    display: grid;
+    flex: 1 1 auto;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    min-width: 0;
+    min-height: 0;
+    border-top: 1px solid var(--page-border);
+  }
+
+  .excel-pane {
+    @include flex-layout(column, stretch);
+    min-width: 0;
+    min-height: 0;
+
+    &.json-output-pane {
+      border-left: 1px solid var(--page-border);
+    }
+  }
+
+  .excel-pane-heading {
+    @include flex-layout(row, center, flex-start, 10px);
+    flex: 0 0 58px;
+    min-width: 0;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--page-border);
+    background: var(--page-panel-alt, var(--page-soft));
+    font-size: 0.94rem;
+
+    strong {
+      color: var(--page-text);
+    }
+    > span {
+      overflow: hidden;
+      color: var(--page-muted);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .output-actions {
+    @include flex-layout(row, center, flex-start, 8px);
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
+
+  .output-icon-button {
+    @include flex-layout(row, center, center);
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid var(--page-border);
+    border-radius: 10px;
+    background: var(--page-surface);
+    color: var(--page-muted);
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background: var(--page-soft);
+    }
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 1.8;
+    }
+  }
+
+  .spreadsheet-scroll {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+    background: var(--page-surface);
+  }
+
+  .spreadsheet-table {
+    width: max-content;
+    min-width: 100%;
+    border-collapse: collapse;
+    color: var(--page-text);
+    font-size: 0.94rem;
+    white-space: nowrap;
+
+    th,
+    td {
+      min-width: 76px;
+      padding: 11px 14px;
+      border: 1px solid var(--page-border);
+      text-align: left;
+    }
+
+    .column-letters th {
+      min-width: 54px;
+      padding: 8px;
+      background: var(--page-soft);
+      color: var(--page-muted);
+      font-size: 0.82rem;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .row-header {
+      position: sticky;
+      left: 0;
+      min-width: 44px;
+      padding: 10px 8px;
+      background: var(--page-soft);
+      color: var(--page-muted);
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .header-cell {
+      color: var(--page-accent);
+      font-weight: 650;
+    }
+  }
+
+  .spreadsheet-empty {
+    display: grid;
+    min-height: 100%;
+    place-items: center;
+    color: var(--page-muted);
+  }
+
+  .sheet-tab {
+    flex: 0 0 42px;
+    padding: 10px 18px;
+    border-top: 1px solid var(--page-border);
+    color: var(--page-text);
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+
+  .json-result-editor {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--page-surface);
+
+    .json-result-gutter {
+      flex: 0 0 48px;
+      padding: 16px 10px 16px 4px;
+      overflow: hidden;
+      border-right: 1px solid var(--page-border);
+      background: var(--page-soft);
+      color: var(--page-muted);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.86rem;
+      line-height: 1.58;
+      text-align: right;
+      user-select: none;
+      pointer-events: none;
+
+      span {
+        display: block;
+        height: 1.58em;
+      }
+    }
+
+    .json-result {
+      flex: 1;
+      width: 0;
+      min-width: 0;
+      min-height: 0;
+      margin: 0;
+      padding: 16px;
+      overflow: auto;
+      background: var(--page-surface);
+      color: var(--page-text);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.88rem;
+      line-height: 1.58;
+      white-space: pre;
+      tab-size: 2;
+    }
+  }
+
+  .json-token-key {
+    color: var(--page-code-key);
+  }
+  .json-token-string {
+    color: var(--page-code-string);
+  }
+  .json-token-number {
+    color: var(--page-code-number);
+  }
+  .json-token-literal {
+    color: var(--page-code-literal);
+  }
+  .output-placeholder {
+    color: var(--page-muted);
+  }
+
+  .excel-to-json-status {
+    @include flex-layout(row, center, flex-start, 10px);
+    flex: 0 0 auto;
+    min-height: 56px;
+    margin: 0 16px 16px;
+    padding: 0 18px;
+    border-radius: 13px;
+    background: var(--page-success-bg);
+    color: var(--page-success-text);
+    font-weight: 600;
+
+    &.status-error {
+      background: var(--page-error-bg);
+      color: var(--page-error-text);
+    }
+
+    .status-indicator {
+      flex: 0 0 11px;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+  }
+}
+
+@media (max-width: 900px) {
+  .excel-to-json {
+    height: auto;
+    min-height: calc(100vh - 48px);
+
+    .excel-to-json-card {
+      min-height: 850px;
+    }
+    .excel-to-json-toolbar {
+      grid-template-columns: minmax(0, 1fr) auto auto auto;
+    }
+  }
+}
+
+@media (max-width: 680px) {
+  .excel-to-json {
+    min-height: 0;
+
+    .excel-to-json-heading h1 {
+      font-size: 1.65rem;
+    }
+    .excel-to-json-heading p {
+      font-size: 0.9rem;
+    }
+    .excel-to-json-card {
+      min-height: 980px;
+    }
+
+    .excel-to-json-toolbar {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      padding: 12px 12px 0;
+
+      .excel-file-drop {
+        grid-column: 1 / -1;
+      }
+      .select-control {
+        min-width: 0;
+        padding: 0 8px;
+      }
+      .select-control select {
+        max-width: 100%;
+        font-size: 0.82rem;
+      }
+      .indent-control {
+        grid-column: 2;
+      }
+      .toolbar-button {
+        grid-column: 3;
+        padding: 0 8px;
+      }
+      .excel-file-drop {
+        gap: 6px;
+        padding: 0 8px;
+        font-size: 0.8rem;
+      }
+      .selected-file {
+        display: none;
+      }
+    }
+
+    .excel-to-json-panes {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(350px, 1fr) minmax(350px, 1fr);
+    }
+
+    .excel-pane.json-output-pane {
+      border-top: 1px solid var(--page-border);
+      border-left: 0;
+    }
+    .excel-pane-heading {
+      flex-basis: 52px;
+      padding: 0 10px;
+      gap: 7px;
+      font-size: 0.82rem;
+    }
+    .output-icon-button {
+      width: 34px;
+      height: 34px;
+    }
+    .json-result-editor .json-result-gutter {
+      flex-basis: 40px;
+      padding-right: 7px;
+      font-size: 0.78rem;
+    }
+    .json-result-editor .json-result {
+      padding: 14px 10px;
+      font-size: 0.8rem;
+    }
+    .spreadsheet-table th,
+    .spreadsheet-table td {
+      min-width: 68px;
+      padding: 9px 10px;
+      font-size: 0.82rem;
+    }
+    .excel-to-json-status {
+      min-height: 48px;
+      margin: 0 12px 12px;
+      padding: 0 12px;
+      font-size: 0.86rem;
+    }
+  }
+}

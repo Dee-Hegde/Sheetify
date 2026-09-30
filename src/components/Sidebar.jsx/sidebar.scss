@@ -1,0 +1,74 @@
+@use "../../assets/styles/variables" as *;
+.sidebar-container {
+  position: sticky;
+  top: 0;
+  @include flex-layout(column, stretch, flex-start);
+  flex: 0 0 220px;
+  width: 220px;
+  height: 100vh;
+  padding-bottom: 14px;
+  border-right: 1px solid $dark-line;
+  background: $dark-sidebar-bg;
+  color: $dark-sidebar-hi;
+
+  .titlebar {
+    padding: 18px 16px 28px;
+
+    img {
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  .sidebar-link-container {
+    @include flex-layout(column, stretch, flex-start, 6px);
+    padding: 0 12px;
+
+    > a {
+      @include flex-layout(row, center, center, 10px);
+      min-height: 42px;
+      padding: 0 12px;
+      border-radius: 9px;
+      color: $dark-sidebar-text;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition:
+        background 150ms ease,
+        color 150ms ease;
+
+      &:hover,
+      &.active {
+        background: $dark-sidebar-active;
+        color: $dark-sidebar-hi;
+      }
+
+      &.active {
+        box-shadow: inset 2px 0 $brand;
+      }
+    }
+  }
+
+  .sidebar-theme-switcher {
+    @include flex-layout(row, center, flex-start, 4px);
+    margin: auto 12px 0;
+    padding: 4px;
+    border: 1px solid $dark-line;
+    border-radius: 10px;
+    background: $dark-panel;
+
+    button {
+      @include button-base(transparent, $dark-sidebar-text);
+
+      &.active {
+        @include button-base($dark-sidebar-active, $dark-sidebar-hi);
+        box-shadow: inset 0 0 0 1px $dark-line;
+      }
+
+      &:focus-visible {
+        outline: 2px solid $brand;
+        outline-offset: 2px;
+      }
+    }
+  }
+}

@@ -1,0 +1,145 @@
+@use "sass:map";
+
+@mixin flex-layout(
+  $direction: row,
+  $align: center,
+  $justify: flex-start,
+  $gap: 0
+) {
+  display: flex;
+  flex-direction: $direction;
+  align-items: $align;
+  justify-content: $justify;
+  gap: $gap;
+}
+
+@mixin button-base($background, $color, $radius: 7px, $min-height: 36px) {
+  @include flex-layout(row, center, center, 6px);
+  flex: 1;
+  min-height: $min-height;
+  padding: 0 8px;
+  border: 0;
+  border-radius: $radius;
+  background: $background;
+  color: $color;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+$brand: #12b76a;
+$brand-blue: #2e6bff;
+$brand-ink: #04331e;
+
+$light-bg: #f3f6f4;
+$light-panel: #ffffff;
+$light-panel-alt: #f8faf9;
+$light-line: #e2e9e5;
+$light-text: #12201b;
+$light-muted: #66776f;
+$light-sidebar-bg: #0e1a16;
+$light-sidebar-text: #a9bcb4;
+$light-sidebar-hi: #ffffff;
+$light-sidebar-active: #1a2e27;
+$light-syntax-key: #0d7a55;
+$light-syntax-string: #b4531a;
+$light-syntax-number: #2e5bd8;
+$light-syntax-bool: #8a3fc4;
+$light-syntax-punc: #8a9a93;
+$light-success-bg: #e6f7ee;
+$light-success: #0b7a48;
+$light-error-bg: #fdecec;
+$light-error: #b42318;
+$light-shadow: #10201b;
+
+$dark-bg: #08110e;
+$dark-panel: #0f1b17;
+$dark-panel-alt: #0b1613;
+$dark-line: #1d2f28;
+$dark-text: #e6f1ec;
+$dark-muted: #7f958b;
+$dark-sidebar-bg: #050b09;
+$dark-sidebar-text: #7f958b;
+$dark-sidebar-hi: #ffffff;
+$dark-sidebar-active: #12231d;
+$dark-syntax-key: #4fe0a0;
+$dark-syntax-string: #f0a970;
+$dark-syntax-number: #7ea6ff;
+$dark-syntax-bool: #c99bf5;
+$dark-syntax-punc: #5d736a;
+$dark-success-bg: #0f2c20;
+$dark-success: #4fe0a0;
+$dark-error-bg: #341514;
+$dark-error: #ff8f86;
+$dark-shadow: #000000;
+
+$themes: (
+  light: (
+    bg: $light-bg,
+    panel: $light-panel,
+    panel-alt: $light-panel-alt,
+    line: $light-line,
+    text: $light-text,
+    muted: $light-muted,
+    sidebar-bg: $light-sidebar-bg,
+    sidebar-text: $light-sidebar-text,
+    sidebar-hi: $light-sidebar-hi,
+    sidebar-active: $light-sidebar-active,
+    key: $light-syntax-key,
+    string: $light-syntax-string,
+    number: $light-syntax-number,
+    bool: $light-syntax-bool,
+    punc: $light-syntax-punc,
+    success-bg: $light-success-bg,
+    success: $light-success,
+    error-bg: $light-error-bg,
+    error: $light-error,
+    shadow: $light-shadow,
+  ),
+  dark: (
+    bg: $dark-bg,
+    panel: $dark-panel,
+    panel-alt: $dark-panel-alt,
+    line: $dark-line,
+    text: $dark-text,
+    muted: $dark-muted,
+    sidebar-bg: $dark-sidebar-bg,
+    sidebar-text: $dark-sidebar-text,
+    sidebar-hi: $dark-sidebar-hi,
+    sidebar-active: $dark-sidebar-active,
+    key: $dark-syntax-key,
+    string: $dark-syntax-string,
+    number: $dark-syntax-number,
+    bool: $dark-syntax-bool,
+    punc: $dark-syntax-punc,
+    success-bg: $dark-success-bg,
+    success: $dark-success,
+    error-bg: $dark-error-bg,
+    error: $dark-error,
+    shadow: $dark-shadow,
+  ),
+);
+
+@mixin apply-page-theme($theme) {
+  --page-bg: #{map.get($theme, bg)};
+  --page-surface: #{map.get($theme, panel)};
+  --page-border: #{map.get($theme, line)};
+  --page-text: #{map.get($theme, text)};
+  --page-muted: #{map.get($theme, muted)};
+  --page-soft: #{map.get($theme, panel-alt)};
+  --page-gutter: #{map.get($theme, panel-alt)};
+  --page-accent: #{$brand};
+  --page-success-bg: #{map.get($theme, success-bg)};
+  --page-success-border: #{map.get($theme, line)};
+  --page-success-text: #{map.get($theme, success)};
+  --page-info-bg: #{map.get($theme, panel-alt)};
+  --page-info-border: #{map.get($theme, line)};
+  --page-info-text: #{map.get($theme, muted)};
+  --page-error-bg: #{map.get($theme, error-bg)};
+  --page-error-border: #{map.get($theme, line)};
+  --page-error-text: #{map.get($theme, error)};
+  --page-code-key: #{map.get($theme, key)};
+  --page-code-string: #{map.get($theme, string)};
+  --page-code-number: #{map.get($theme, number)};
+  --page-code-literal: #{map.get($theme, bool)};
+}

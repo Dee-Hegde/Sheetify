@@ -1,0 +1,73 @@
+@use "sass:map";
+@use "./variables" as *;
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  overflow: hidden;
+}
+
+.app-container {
+  @include apply-page-theme(map.get($themes, dark));
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  background: var(--page-bg);
+  color: var(--page-text);
+}
+
+.app-container.theme-light {
+  @include apply-page-theme(map.get($themes, light));
+}
+
+.page-container {
+  flex: 1;
+  min-width: 0;
+  padding: 24px;
+  min-height: 100vh;
+  overflow: auto;
+  background: var(--page-bg);
+  color: var(--page-text);
+}
+
+.page-container .container {
+  background: var(--page-surface);
+  border-color: var(--page-border);
+  color: var(--page-text);
+}
+
+.page-container .subtitle,
+.page-container .hint,
+.page-container .stats,
+.page-container .filename {
+  color: var(--page-muted);
+}
+
+.page-container .output textarea,
+.page-container .controls input[type="text"] {
+  background: var(--page-surface);
+  border-color: var(--page-border);
+  color: var(--page-text);
+}
+
+.page-container .dropzone,
+.page-container .controls input[type="file"] {
+  background: var(--page-soft);
+  border-color: var(--page-border);
+  color: var(--page-text);
+}
