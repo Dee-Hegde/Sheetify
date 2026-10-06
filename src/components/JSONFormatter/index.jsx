@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import { formatJson } from "../../utils/jsonFormatter";
-import uploadFile from "../../assets/images/upload-file.svg";
+// import uploadFile from "../../assets/images/svgs/upload-file.svg";
 import "./jsonFormatter.scss";
 
 const DEFAULT_FILE_NAME = "formatted-data.json";
@@ -438,10 +438,10 @@ const JSONFormatter = () => {
                 className="upload-icon"
                 aria-hidden="true"
               >
-                <img
+                {/* <img
                   src={uploadFile}
                   alt="Upload File"
-                />
+                /> */}
               </span>
               Browse JSON
             </button>
