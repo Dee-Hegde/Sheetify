@@ -3,18 +3,22 @@ import "./sidebar.scss";
 import { NavLink } from "react-router-dom";
 import logo from "../../assets/images/logo.svg";
 import { appIcons } from "../../assets/images/Icons/appIcons";
+import { sidebarIcons } from "../../assets/images/sidebarIcons/sidebarIcons";
 
 const Sidebar = ({ theme, setTheme }) => {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
-  const mobileSidebarRef = React.useRef(null);
   const handleSidebar = () => {
     setIsSidebarOpen((isOpen) => !isOpen);
   };
 
   const sidebarLinks = [
-    { text: "Excel to JSON", path: "/exceltojson" },
-    { text: "JSON to Excel", path: "/jsontoexcel" },
-    { text: "JSON Formatter", path: "/jsonformatter" },
+    { text: "Excel to JSON", path: "/exceltojson", icon: sidebarIcons.excel },
+    { text: "JSON to Excel", path: "/jsontoexcel", icon: sidebarIcons.braces },
+    {
+      text: "JSON Formatter",
+      path: "/jsonformatter",
+      icon: sidebarIcons.formatter,
+    },
   ];
   return (
     <>
@@ -37,6 +41,7 @@ const Sidebar = ({ theme, setTheme }) => {
               key={index}
               to={link.path}
             >
+              {<link.icon className="sidebar-link-icon" />}
               {link.text}
             </NavLink>
           ))}
@@ -87,6 +92,17 @@ const Sidebar = ({ theme, setTheme }) => {
             onClick={handleSidebar}
             className={`menu-screen-wrapper${isSidebarOpen ? " open" : ""}`}
           >
+            <div className="close-icon-container">
+              {appIcons.close && (
+                <appIcons.close
+                  className="close-icon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsSidebarOpen(false);
+                  }}
+                />
+              )}
+            </div>
             <div
               className="menu-screen"
               onClick={(e) => {
@@ -98,14 +114,6 @@ const Sidebar = ({ theme, setTheme }) => {
                   src={logo}
                   alt="Logo"
                 />
-                <div className="close-icon-container">
-                  {appIcons.close && (
-                    <appIcons.close
-                      className="close-icon"
-                      onClick={() => setIsSidebarOpen(false)}
-                    />
-                  )}
-                </div>
               </div>
               <div className="menu-link-wrapper">
                 <div className="sidebar-link-container">
@@ -118,6 +126,7 @@ const Sidebar = ({ theme, setTheme }) => {
                       to={link.path}
                       onClick={() => setIsSidebarOpen(false)}
                     >
+                      {link.icon && <link.icon className="sidebar-link-icon" />}
                       {link.text}
                     </NavLink>
                   ))}

@@ -4,21 +4,22 @@
   max-width: 220px;
   height: 100vh;
   background: var(--page-surface);
-  @include flex-layout(column, flex-start, flex-start, 8px);
+  @include flex-layout(column, flex-start, flex-start, 16px);
   align-self: stretch;
   overflow: hidden;
-  padding: 16px 8px;
+  padding: 8px 8px 16px 8px;
   position: relative;
   @media (max-width: 1050px) {
     display: none;
   }
   .titlebar {
     width: 100%;
-    height: 48px;
+    height: fit-content;
     @include flex-layout();
     img {
       width: 100%;
       height: auto;
+      max-width: 180px;
     }
   }
 }
@@ -54,8 +55,21 @@
       background: var(transparent);
       z-index: 1000;
       transition: all 1s ease-in-out;
+      .close-icon-container {
+        margin-top: 4px;
+        width: fit-content;
+        height: fit-content;
+        @include flex-layout(row, center, center, 8px);
+        cursor: pointer;
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        svg{
+          fill: #ffffff;
+        }
+      }
       .menu-screen {
-        width: 90%;
+        width: fit-content;
         height: 100vh;
         background: var(--page-soft);
       }
@@ -67,13 +81,6 @@
         img {
           width: 180px;
           height: auto;
-        }
-        .close-icon-container {
-          margin-top: 4px;
-          width: fit-content;
-          height: fit-content;
-          @include flex-layout(row, center, center, 8px);
-          cursor: pointer;
         }
       }
       .menu-link-wrapper {
@@ -106,33 +113,41 @@
   .sidebar-link-container {
     width: 100%;
     @include flex-layout(column, flex-start, flex-start, 8px);
-
     .sidebar-link {
       width: 100%;
       @include flex-layout(row, center, flex-start, 8px);
-      padding: 8px 16px;
+      padding: 8px;
       border-radius: 4px;
       color: var(--page-text);
       text-decoration: none;
       cursor: pointer;
-      transition: background 0.2s ease-in-out;
+      transition: background 0.5s ease-in-out;
+      border: 1px solid var(--page-surface);
+      font-weight: 600;
+      svg {
+        width: 18px;
+        height: 18px;
+      }
 
-      &:hover,
+      &:hover {
+        border: 1px solid var(--page-accent);
+      }
       &.active {
         background: var(--page-soft);
       }
 
       &.active {
-        color: var(--page-accent);
-        box-shadow: inset 3px 0 var(--page-accent);
+        color: #ffffff;
         font-weight: 600;
+        border: 1px solid var(--page-accent);
+        background: var(--page-accent);
       }
     }
   }
 
   .sidebar-theme-switcher {
     @include flex-layout(column, center, center, 8px);
-    padding: 16px;
+    padding: 16px 8px;
     width: 100%;
     @media (max-width: 1050px) {
       justify-content: flex-start;
@@ -141,7 +156,7 @@
 
     .notice-container {
       @include flex-layout(column, flex-start, flex-start, 8px);
-      width: 90%;
+      width: 100%;
       padding: 12px;
       border-radius: 4px;
       background: var(--page-success-bg);
@@ -159,7 +174,7 @@
 
     .theme-switch-container {
       @include flex-layout(row, center, center, 8px);
-      width: 90%;
+      width: 100%;
       padding: 8px;
       border-radius: 4px;
       background: var(--page-success-bg);

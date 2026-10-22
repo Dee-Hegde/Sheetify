@@ -3,7 +3,8 @@
 .formatter-page {
   @include flex-layout(column, stretch, flex-start, 16px);
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 32px);
+  min-height: 0;
   color: var(--page-text);
 
   .formatter-heading {
@@ -413,6 +414,12 @@
       padding-right: 12px;
       padding-left: 12px;
     }
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1050px) {
+  .formatter-page {
+    height: calc(100vh - 104px);
   }
 }
 
