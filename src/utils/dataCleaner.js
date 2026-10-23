@@ -100,7 +100,7 @@ function cleanAndConvertFromRows(rows) {
 
   // Adjust headers to activeCols
   const activeHeaders = activeCols.map(
-    (c, idx) => headers[columnCandidates.indexOf(c)]
+    (c, idx) => headers[columnCandidates.indexOf(c)],
   );
 
   // Convert rows to objects, skipping rows that are fully empty across active columns
@@ -128,3 +128,57 @@ function cleanAndConvertFromRows(rows) {
 }
 
 export { cleanAndConvertFromRows };
+
+export const SAMPLE_ROWS = [
+  ["id", "name", "team", "salary", "active", "city"],
+  [1, "Asha Rao", "Design", 72000, true, "Mumbai"],
+  [2, "Vikram Shah", "Engineering", 98000, true, "Bengaluru"],
+  [3, "Meera Iyer", "Product", 88000, false, "Chennai"],
+  [4, "Rahul Nair", "Engineering", 91000, true, "Kochi"],
+];
+
+export const toColumnLabel = (index) => {
+  let value = index + 1;
+  let label = "";
+  while (value > 0) {
+    value -= 1;
+    label = String.fromCharCode(65 + (value % 26)) + label;
+    value = Math.floor(value / 26);
+  }
+  return label;
+};
+
+export const renderJsonTokens = (value) => {
+  const tokenPattern =
+    /"(?:\\.|[^"\\])*"|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|\b(?:true|false|null)\b/g;
+  const parts = [];
+  let lastIndex = 0;
+
+  for (const match of value.matchAll(tokenPattern)) {
+    const token = match[0];
+    const index = match.index;
+    const isKey =
+      token.startsWith('"') && /^\s*:/.test(value.slice(index + token.length));
+    const tokenClass = isKey
+      ? "json-token-key"
+      : token.startsWith('"')
+        ? "json-token-string"
+        : /^-?\d/.test(token)
+          ? "json-token-number"
+          : "json-token-literal";
+
+    if (index > lastIndex) parts.push(value.slice(lastIndex, index));
+    parts.push(
+      <span
+        className={tokenClass}
+        key={index}
+      >
+        {token}
+      </span>,
+    );
+    lastIndex = index + token.length;
+  }
+
+  if (lastIndex < value.length) parts.push(value.slice(lastIndex));
+  return parts;
+};

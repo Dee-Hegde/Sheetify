@@ -17,6 +17,9 @@ body,
   font-weight: 400;
   font-style: normal;
   font-size: 16px;
+  @media (max-width: 767px) {
+    font-size: 14px;
+  }
 }
 
 .app-container {
@@ -75,15 +78,23 @@ body,
 ::-webkit-scrollbar-thumb {
   width: 6px;
   border-radius: 6px;
-  background: #555B66;
-
+  background: #555b66;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #555B66;
+  background: #555b66;
 }
 /* Horizontal scrollbar track */
 *::-webkit-scrollbar:horizontal {
   height: 6px;
+}
+
+.page-title-container {
+  width: 100%;
+  @include flex-layout(row, center, flex-start);
+  h1 {
+    @include font-base(20px, 600);
+    color: var(--page-text);
+  }
 }
