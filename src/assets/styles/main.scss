@@ -56,6 +56,9 @@ body,
   @media (max-width: 1050px) {
     overflow-y: auto;
   }
+  @media (max-width: 767px) {
+    padding: 8px;
+  }
 }
 
 .page-container .container {
