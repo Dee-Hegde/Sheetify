@@ -6,6 +6,7 @@ import "./assets/styles/main.scss";
 import ExcelToJson from "./pages/excelToJson/index.jsx";
 import JSONToExcel from "./pages/jsonToExcel/index.jsx";
 import JSONFormatter from "./pages/jsonFormatter/index.jsx";
+import JsonComparator from "./pages/jsonComparator/index.jsx";
 import Home from "./pages/Home/Home.jsx";
 
 function App() {
@@ -24,6 +25,10 @@ function App() {
     {
       path: "/jsonformatter",
       element: <JSONFormatter title="JSON Formatter" />,
+    },
+    {
+      path: "/jsoncomparator",
+      element: <JsonComparator title="JSON Comparator" />,
     },
   ];
 

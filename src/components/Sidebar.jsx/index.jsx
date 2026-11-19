@@ -19,6 +19,11 @@ const Sidebar = ({ theme, setTheme }) => {
       path: "/jsonformatter",
       icon: sidebarIcons.formatter,
     },
+    {
+      text: "JSON Comparator",
+      path: "/jsoncomparator",
+      icon: sidebarIcons.comparator,
+    },
   ];
   return (
     <>

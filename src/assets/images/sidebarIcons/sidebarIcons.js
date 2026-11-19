@@ -1,6 +1,7 @@
 import { ReactComponent as excel } from "./excel.svg";
 import { ReactComponent as braces } from "./braces.svg";
 import { ReactComponent as formatter } from "./formatter.svg";
+import { ReactComponent as comparator } from "./comparator.svg";
 // import { ReactComponent as closeIcon } from "./close.svg";
 
 export const sidebarIcons = {
@@ -10,4 +11,5 @@ export const sidebarIcons = {
   //   light: lightIcon,
   //   dark: darkIcon,
   //   close: closeIcon,
+  comparator: comparator,
 };

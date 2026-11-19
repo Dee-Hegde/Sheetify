@@ -16,7 +16,6 @@
     align-items: stretch;
     border: 1px solid var(--page-border);
     border-radius: 10px;
-    background: var(--page-surface);
   }
 
   .json-formatter-toolbar {
@@ -274,21 +273,18 @@
   .json-formatter-status {
     @include flex-layout(row, center, flex-start, 10px);
     flex: 0 0 auto;
-    min-height: 50px;
+    min-height: 44px;
     margin: 8px;
     padding: 8px 12px;
-    border-radius: 12px;
+    border-radius: 11px;
+    font-size: 0.9rem;
     font-weight: 600;
 
-    &.status-valid {
-      background: var(--page-success-bg);
-      color: var(--page-success-text);
-    }
-
+    &.status-valid,
     &.status-ready,
     &.status-empty {
-      background: var(--page-info-bg);
-      color: var(--page-info-text);
+      background: var(--page-success-bg);
+      color: var(--page-success-text);
     }
 
     &.status-invalid {

@@ -1,0 +1,407 @@
+@use "../../assets/styles/variables" as *;
+
+.json-comparator-page-container {
+  @include flex-layout(column, flex-start, flex-start, 16px);
+  width: 100%;
+  height: calc(100vh - 24px);
+  color: var(--page-text);
+
+  .json-comparator-card {
+    display: flex;
+    flex: 1 1 0;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    flex-direction: column;
+    border: 1px solid var(--page-border);
+    border-radius: 10px;
+  }
+
+  .json-comparator-toolbar {
+    @include flex-layout(row, center, flex-start, 12px);
+    flex: 0 0 auto;
+    min-width: 0;
+    padding: 14px 16px;
+    background: var(--page-surface);
+
+    .comparison-mode-control {
+      @include flex-layout(row, center, flex-start, 10px);
+      min-width: 0;
+      color: var(--page-muted);
+      font-size: 0.9rem;
+    }
+
+    .comparison-mode-options {
+      @include flex-layout(row, center, flex-start, 4px);
+      padding: 4px;
+      border: 1px solid var(--page-border);
+      border-radius: 10px;
+      background: var(--page-soft);
+
+      button {
+        min-height: 34px;
+        padding: 0 12px;
+        border: 0;
+        border-radius: 7px;
+        background: transparent;
+        color: var(--page-muted);
+        font: inherit;
+        cursor: pointer;
+
+        &.active {
+          background: var(--page-surface);
+          color: var(--page-text);
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.16);
+        }
+      }
+    }
+
+    .toolbar-hint {
+      margin-left: auto;
+      color: var(--page-muted);
+      font-size: 0.84rem;
+    }
+
+    .toolbar-button {
+      min-height: 42px;
+      padding: 0 14px;
+      border: 1px solid var(--page-border);
+      border-radius: 10px;
+      background: var(--page-surface);
+      color: var(--page-text);
+      font: inherit;
+      cursor: pointer;
+
+      &:hover {
+        background: var(--page-soft);
+      }
+    }
+  }
+
+  .comparator-panes {
+    display: flex;
+    flex: 1 1 0;
+    width: 100%;
+    min-height: 0;
+    overflow: hidden;
+    border-top: 1px solid var(--page-border);
+  }
+
+  .comparator-pane {
+    @include flex-layout(column, stretch);
+    position: relative;
+    flex: 1 1 50%;
+    width: 50%;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+
+    & + .comparator-pane {
+      border-left: 1px solid var(--page-border);
+    }
+
+    &.dragging {
+      box-shadow: inset 0 0 0 2px var(--page-accent);
+    }
+  }
+
+  .comparator-pane-heading {
+    @include flex-layout(row, center, space-between, 10px);
+    flex: 0 0 58px;
+    min-width: 0;
+    padding: 0 12px 0 16px;
+    border-bottom: 1px solid var(--page-border);
+    background: var(--page-panel-alt, var(--page-soft));
+
+    .pane-title {
+      @include flex-layout(row, baseline, flex-start, 10px);
+      min-width: 0;
+
+      strong {
+        color: var(--page-text);
+        font-size: 0.94rem;
+      }
+
+      span,
+      .file-name {
+        overflow: hidden;
+        color: var(--page-muted);
+        font-size: 0.82rem;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .pane-upload {
+    @include flex-layout(row, center, flex-end, 8px);
+    min-width: 0;
+
+    .file-name {
+      max-width: 180px;
+      overflow: hidden;
+      color: var(--page-muted);
+      font-size: 0.82rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .upload-button {
+      @include flex-layout(row, center, center, 7px);
+      min-height: 36px;
+      padding: 0 10px;
+      border: 1px solid var(--page-border);
+      border-radius: 9px;
+      background: var(--page-surface);
+      color: var(--page-text);
+      font: inherit;
+      font-size: 0.84rem;
+      cursor: pointer;
+
+      &:hover {
+        border-color: var(--page-accent);
+      }
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
+  .diff-editor {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--page-surface);
+
+    .line-gutter {
+      flex: 0 0 48px;
+      padding: 16px 10px 16px 4px;
+      overflow: hidden;
+      border-right: 1px solid var(--page-border);
+      background: var(--page-soft);
+      color: var(--page-muted);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.84rem;
+      line-height: 1.58;
+      text-align: right;
+      user-select: none;
+
+      span {
+        display: block;
+        height: 1.58em;
+
+        &.changed-line {
+          margin-right: -10px;
+          padding-right: 10px;
+          background: color-mix(in srgb, var(--page-accent) 15%, transparent);
+          color: var(--page-text);
+        }
+      }
+    }
+
+    .code-surface {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .syntax-highlight,
+    textarea {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 16px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.88rem;
+      font-weight: 400;
+      line-height: 1.58;
+      tab-size: 2;
+      white-space: pre;
+    }
+
+    .syntax-highlight {
+      overflow: hidden;
+      background: var(--page-surface);
+      color: var(--page-text);
+      pointer-events: none;
+    }
+
+    .diff-line {
+      display: block;
+      min-height: 1.58em;
+
+      &.changed-line {
+        background: color-mix(in srgb, var(--page-accent) 14%, transparent);
+      }
+    }
+
+    textarea {
+      resize: none;
+      border: 0;
+      outline: 0;
+      overflow: auto;
+      background: transparent;
+      color: transparent;
+      caret-color: var(--page-text);
+      -webkit-text-fill-color: transparent;
+
+      &::selection {
+        background: color-mix(in srgb, var(--page-accent) 45%, transparent);
+      }
+
+      &.invalid:focus-visible {
+        box-shadow: inset 0 0 0 2px var(--page-error-text);
+      }
+    }
+
+    .json-token-key {
+      color: var(--page-code-key);
+    }
+
+    .json-token-string {
+      color: var(--page-code-string);
+    }
+
+    .json-token-number {
+      color: var(--page-code-number);
+    }
+
+    .json-token-literal {
+      color: var(--page-code-literal);
+    }
+
+    .empty-placeholder {
+      color: var(--page-muted);
+    }
+  }
+
+  .pane-validation {
+    flex: 0 0 auto;
+    max-height: 52px;
+    padding: 8px 14px;
+    overflow: auto;
+    border-top: 1px solid var(--page-error-border);
+    background: var(--page-error-bg);
+    color: var(--page-error-text);
+    font-size: 0.82rem;
+  }
+
+  .json-comparator-status {
+    @include flex-layout(row, center, flex-start, 10px);
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 8px 12px;
+    margin: 8px;
+    border-radius: 11px;
+    background: var(--page-success-bg);
+    color: var(--page-success-text);
+    font-size: 0.9rem;
+    font-weight: 600;
+
+    .status-indicator {
+      flex: 0 0 11px;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+  }
+
+  @media (max-width: 1050px) {
+    gap: 8px;
+    height: 100%;
+    padding-top: 64px;
+    overflow-y: auto;
+  }
+
+  @media (max-width: 767px) {
+    height: auto;
+    min-height: 100%;
+    overflow-y: visible;
+
+    .json-comparator-card {
+      flex: 0 0 auto;
+      min-height: auto;
+    }
+
+    .json-comparator-toolbar {
+      flex-wrap: wrap;
+      gap: 8px;
+
+      .toolbar-hint {
+        display: none;
+      }
+
+      .clear-button {
+        margin-left: auto;
+      }
+    }
+
+    .comparator-panes {
+      flex: 0 0 auto;
+      flex-direction: column;
+      min-height: auto;
+      overflow: visible;
+    }
+
+    .comparator-pane {
+      flex: 0 0 360px;
+      width: 100%;
+      min-height: 360px;
+
+      & + .comparator-pane {
+        border-top: 1px solid var(--page-border);
+        border-left: 0;
+      }
+    }
+  }
+
+  @media (max-width: 550px) {
+    .json-comparator-toolbar {
+      flex-direction: column;
+      align-items: stretch;
+
+      .comparison-mode-control {
+        width: 100%;
+        flex: 0 0 auto;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+
+      .comparison-mode-options {
+        width: 100%;
+
+        button {
+          flex: 1 1 50%;
+          min-width: 0;
+        }
+      }
+
+      .clear-button {
+        width: 100%;
+        margin-left: 0;
+      }
+    }
+
+    .comparator-pane-heading {
+      padding: 0 8px;
+
+      .pane-title {
+        gap: 6px;
+      }
+    }
+
+    .pane-upload .file-name {
+      display: none;
+    }
+  }
+}

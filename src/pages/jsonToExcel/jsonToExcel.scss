@@ -330,12 +330,13 @@
   .json-to-excel-page-status {
     @include flex-layout(row, center, flex-start, 10px);
     flex: 0 0 auto;
-    min-height: 56px;
-    padding: 8px;
+    min-height: 44px;
+    padding: 8px 12px;
     margin: 8px;
-    border-radius: 13px;
+    border-radius: 11px;
     background: var(--page-success-bg);
     color: var(--page-success-text);
+    font-size: 0.9rem;
     font-weight: 600;
 
     &.status-error {
