@@ -8,7 +8,7 @@ import {
   SAMPLE_ROWS,
   toColumnLabel,
 } from "../../utils/dataCleaner";
-import exceltojson from "./exceltojson.scss";
+import "./exceltojson.scss";
 import { appIcons } from "../../assets/images/Icons/appIcons";
 
 const ExcelToJson = (props) => {
@@ -19,14 +19,15 @@ const ExcelToJson = (props) => {
   const [error, setError] = useState("");
   const [feedback, setFeedback] = useState("");
   const [sheets, setSheets] = useState({ Sheet1: SAMPLE_ROWS });
-  const [sheetNames, setSheetNames] = useState(["Sheet1"]);
   const [selectedSheet, setSelectedSheet] = useState("Sheet1");
   const [fileName, setFileName] = useState("sample_data.xlsx");
   const [isDragging, setIsDragging] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [indentSize, setIndentSize] = useState(2);
 
-  const rows = sheets[selectedSheet] || [];
+  const rows = useMemo(
+    () => sheets[selectedSheet] || [],
+    [selectedSheet, sheets],
+  );
   const columns = useMemo(
     () =>
       Array.from(
@@ -37,8 +38,8 @@ const ExcelToJson = (props) => {
   );
   const jsonData = useMemo(() => cleanAndConvertFromRows(rows), [rows]);
   const jsonText = useMemo(
-    () => JSON.stringify(jsonData, null, indentSize),
-    [indentSize, jsonData],
+    () => JSON.stringify(jsonData, null, 2),
+    [jsonData],
   );
   const hasData = useMemo(
     () => Array.isArray(jsonData) && jsonData.length > 0,
@@ -155,13 +156,11 @@ const ExcelToJson = (props) => {
         if (ext === "csv") {
           const text = await file.text();
           const rows = parseCsvRows(text);
-          setSheetNames(["Sheet1"]);
           setSheets({ Sheet1: rows });
           setSelectedSheet("Sheet1");
         } else if (ext === "xlsx" || ext === "xls") {
           const buffer = await file.arrayBuffer();
           const workbook = parseExcelSheets(buffer);
-          setSheetNames(workbook.names);
           setSheets(workbook.data);
           setSelectedSheet(workbook.names[0]);
         } else {
@@ -178,7 +177,6 @@ const ExcelToJson = (props) => {
   );
 
   const handleClear = useCallback(() => {
-    setSheetNames([]);
     setSheets({});
     setSelectedSheet("");
     setError("");
