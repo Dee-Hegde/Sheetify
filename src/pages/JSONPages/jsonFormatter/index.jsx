@@ -5,10 +5,10 @@ import React, {
   useRef,
   useState,
 } from "react";
-import PageTitle from "../../components/PageTitle";
-import { appIcons } from "../../assets/images/Icons/appIcons";
-import { renderJsonTokens } from "../../utils/dataCleaner";
-import { formatJson } from "../../utils/jsonFormatter";
+import PageTitle from "../../../components/PageTitle";
+import { appIcons } from "../../../assets/images/Icons/appIcons";
+import { renderJsonTokens } from "../../../utils/dataCleaner";
+import { formatJson } from "../../../utils/jsonFormatter";
 import "./jsonFormatter.scss";
 
 const DEFAULT_FILE_NAME = "formatted-data.json";

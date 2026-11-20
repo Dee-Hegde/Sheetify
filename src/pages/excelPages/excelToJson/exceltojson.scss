@@ -1,4 +1,4 @@
-@use "../../assets/styles/variables" as *;
+@use "../../../assets/styles/variables" as *;
 
 .excel-to-json-page-container {
   @include flex-layout(column, flex-start, flex-start, 16px);

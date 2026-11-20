@@ -1,15 +1,15 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import * as XLSX from "xlsx";
 import Papa from "papaparse";
-import PageTitle from "../../components/PageTitle";
+import PageTitle from "../../../components/PageTitle";
 import {
   cleanAndConvertFromRows,
   renderJsonTokens,
   SAMPLE_ROWS,
   toColumnLabel,
-} from "../../utils/dataCleaner";
+} from "../../../utils/dataCleaner";
 import "./exceltojson.scss";
-import { appIcons } from "../../assets/images/Icons/appIcons";
+import { appIcons } from "../../../assets/images/Icons/appIcons";
 
 const ExcelToJson = (props) => {
   const fileInputRef = useRef(null);

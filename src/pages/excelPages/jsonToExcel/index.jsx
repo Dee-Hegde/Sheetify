@@ -1,12 +1,12 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import * as XLSX from "xlsx";
-import PageTitle from "../../components/PageTitle";
+import PageTitle from "../../../components/PageTitle";
 import {
   ensureObjectsFromJson,
   normalizeExcelHeaders,
-} from "../../utils/jsonNormalize";
-import { renderJsonTokens } from "../../utils/dataCleaner";
-import { appIcons } from "../../assets/images/Icons/appIcons";
+} from "../../../utils/jsonNormalize";
+import { renderJsonTokens } from "../../../utils/dataCleaner";
+import { appIcons } from "../../../assets/images/Icons/appIcons";
 import "./jsonToExcel.scss";
 
 const DEFAULT_FILE_NAME = "sheetify_export";
